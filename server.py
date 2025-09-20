@@ -24,7 +24,7 @@ def handle_client(conn):
                 data = conn.recv(14)
                 if not data:
                     break
-                cmd_type = data[0:6]  # b'MMouse' for move, b'LMouse' left click, b'RMouse' right click
+                cmd_type = data[0:6]  # b'MMouse' for move, b'LMouse' left click, b'RMouse' right click, DMouse and UMouse for click up and down
                 payload = data[6:]
                 print(cmd_type)
                 if cmd_type == b'MMouse':
