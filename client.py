@@ -76,7 +76,7 @@ class RemoteViewer:
         except:
             pass
     
-    # Checks for mouse clicks
+    # When clicking the mouse
     def mouse_click(self, event):
         try:
             if event.num == 1:  # left click
