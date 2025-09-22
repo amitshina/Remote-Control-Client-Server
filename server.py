@@ -39,16 +39,19 @@ def handle_client(conn):
                 elif cmd_type == b'UMouse':
                     pyautogui.mouseUp(button='left')
                 elif cmd_type == b'DKeybr':
-                    print("pressed")
                     key = payload.rstrip(b'\x00').decode("utf-8")
+                    key = convert_key(key)
                     try:
                         pyautogui.keyDown(key)
+                        print(f"Down {key}.")
                     except:
                         print(f"[WARN] Unsupported key: {key}")
-                elif cmd_type == b'Ukeybr':
+                elif cmd_type == b'UKeybr':
                     key = payload.rstrip(b'\x00').decode("utf-8")
+                    key = convert_key(key)
                     try:
-                        pyautogui.keu(key)
+                        pyautogui.keyUp(key)
+                        print(f"Up {key}.")
                     except:
                         print(f"[WARN] Unsupported key: {key}")
         except:
@@ -97,6 +100,17 @@ def start_server(host='0.0.0.0', port=5000):
         conn, addr = s.accept()
         print(f"[SERVER] Connected by {addr}")
         threading.Thread(target=handle_client, args=(conn,), daemon=True).start()
+
+def convert_key(key: str):
+    map = {
+        "Control_L": "ctrl",
+        "Control_R": "ctrl",
+        "Shift_L": "shift",
+        "Shift_R": "shift",
+        "Alt_L": "alt",
+        "Alt_R": "alt",
+    }
+    return map.get(key, key)
 
 if __name__ == "__main__":
     start_server()

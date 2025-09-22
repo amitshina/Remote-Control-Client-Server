@@ -102,23 +102,31 @@ class RemoteViewer:
         except:
             pass
     
-    def keyboard_down(self,event):
+    def get_key(self, event):
         key = event.keysym
-        if not key: return
+        if event.char and event.char.strip() != "":
+            key =  event.char
+        if not key or key == "":
+            key = event.keysym
+        if not key:
+            return None
+        return key
+    
+    def keyboard_down(self,event):
+        key = self.get_key(event)
         try:
-            key_bytes = key.encode('utf-8')[:32]
-            key_bytes = key_bytes.ljust(32, b'\x00')
+            key_bytes = key.encode('utf-8')[:32].ljust(32, b'\x00')
             self.sock.sendall(b'DKeybr' + key_bytes)
+            print("[SEND DOWN]", key)
         except:
             pass
     
     def keyboard_up(self,event):
-        key = event.keysym
-        if not key: return
+        key = self.get_key(event)
         try:
-            key_bytes = key.encode('utf-8')[:32]
-            key_bytes = key_bytes.ljust(32, b'\x00')
+            key_bytes = key.encode('utf-8')[:32].ljust(32, b'\x00') 
             self.sock.sendall(b'UKeybr' + key_bytes)
+            print("[SEND UP]", key) 
         except:
             pass
 
