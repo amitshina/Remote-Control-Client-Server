@@ -24,7 +24,7 @@ def handle_client(conn):
                 data = conn.recv(38)
                 if not data:
                     break
-                print(data)
+                # print(data)
                 cmd_type = data[0:6]  # b'MMouse' for move, b'LMouse' left click, b'RMouse' right click, DMouse and UMouse for click up and down
                 payload = data[6:]
                 if cmd_type == b'MMouse':
@@ -39,6 +39,7 @@ def handle_client(conn):
                 elif cmd_type == b'UMouse':
                     pyautogui.mouseUp(button='left')
                 elif cmd_type == b'DKeybr':
+                    print("pressed")
                     key = payload.rstrip(b'\x00').decode("utf-8")
                     try:
                         pyautogui.keyDown(key)
