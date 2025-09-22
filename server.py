@@ -20,15 +20,15 @@ def handle_client(conn):
     def recv_commands():
         try:
             while True:
-                # Read 14 bytes: 6 byte type + 8 bytes payload (when the payload does'nt matter, zeros are sent)
-                data = conn.recv(14)
+                # Read 38 bytes: 6 byte type + 32 bytes payload (when the payload does'nt matter, zeros are sent)
+                data = conn.recv(38)
                 if not data:
                     break
+                print(data)
                 cmd_type = data[0:6]  # b'MMouse' for move, b'LMouse' left click, b'RMouse' right click, DMouse and UMouse for click up and down
                 payload = data[6:]
-                print(cmd_type)
                 if cmd_type == b'MMouse':
-                    x, y = struct.unpack(">II", payload)
+                    x, y = struct.unpack(">II", payload[:8])
                     pyautogui.moveTo(x, y, duration=0.00001)
                 elif cmd_type == b'LMouse':
                     pyautogui.click(button='left')
@@ -38,6 +38,18 @@ def handle_client(conn):
                     pyautogui.mouseDown(button='left')
                 elif cmd_type == b'UMouse':
                     pyautogui.mouseUp(button='left')
+                elif cmd_type == b'DKeybr':
+                    key = payload.rstrip(b'\x00').decode("utf-8")
+                    try:
+                        pyautogui.keyDown(key)
+                    except:
+                        print(f"[WARN] Unsupported key: {key}")
+                elif cmd_type == b'Ukeybr':
+                    key = payload.rstrip(b'\x00').decode("utf-8")
+                    try:
+                        pyautogui.keu(key)
+                    except:
+                        print(f"[WARN] Unsupported key: {key}")
         except:
             pass
     
