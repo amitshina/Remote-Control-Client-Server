@@ -61,7 +61,7 @@ def server_closed():
         closed_root.destroy()
         main()
     
-    btn_return = tk.Button(closed_root, text="Connect", font=("Arial", 12), command=return_main)
+    btn_return = tk.Button(closed_root, text="Return", font=("Arial", 12), command=return_main)
     btn_return.pack(pady=15)
 
 def open_client_window():

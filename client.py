@@ -106,11 +106,11 @@ class Client:
 
             self.root.after(30, self.update_frame)  # ~30 FPS
         except:
+            start_screen.server_closed()
             self.root.destroy()
             try: 
                 self.sock.close()
             except: pass
-            start_screen.server_closed()
 
     def mouse_move(self, event):
         now = time.time()
