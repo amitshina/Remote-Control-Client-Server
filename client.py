@@ -10,6 +10,7 @@ class Client:
     def __init__(self, port=5000, host=''): # Defualt port: 5000
         if not host: host = input("Enter your IP Address: ")
         
+        print(f"Connecting to {host} port {port}")
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((host, port))
         
@@ -22,7 +23,7 @@ class Client:
         self.root = tk.Tk() 
         
         self.root.geometry(f"{self.server_width}x{self.server_height}")
-        self.root.resizable(False, False)  # Disable resizing
+        self.root.resizable(False, False) 
         
         self.label = tk.Label(self.root) 
         self.label.pack()
@@ -126,6 +127,6 @@ class Client:
         except:
             pass
 
-def start_client(): Client()
+def start_client(ip=""): Client(host=ip)
 
 if __name__=="__main__": Client()

@@ -8,17 +8,38 @@ import pyautogui
 
 
 class Server:
-    def __init__(self, host='0.0.0.0', port=5000):
+    def __init__(self, host='0.0.0.0', port=5000, status_label=None):
         self.last_sent=0
+        self.host = host
+        self.port = port
+        self.s = None
+        self.is_running = False
+        self.status_label = status_label
+
+    def start_server(self):
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s.bind((self.host, self.port))
+        self.s.listen(1)
+        self.is_running = True
+        print(f"[SERVER] Listening on {self.host}:{self.port}")
         
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((host, port))
-        s.listen(1)
-        print(f"[SERVER] Listening on {host}:{port}")
-        while True:
-            conn, addr = s.accept()
-            print(f"[SERVER] Connected by {addr}")
-            threading.Thread(target=self.handle_client, args=(conn,), daemon=True).start()
+        while self.is_running:
+            try:
+                conn, addr = self.s.accept()
+                print(f"[SERVER] Connected by {addr}")
+                if self.status_label:
+                    self.status_label.after(0, lambda: self.status_label.config(text=f"Connected to {addr[0]}"))
+                threading.Thread(target=self.handle_client, args=(conn,), daemon=True).start()
+            except Exception as e:
+                if self.is_running: print(f"Excepsion running server: {e}")
+                break
+
+    def close_server(self):
+        self.is_running = False
+        if self.s:
+            self.s.close()
+            self.s = None
+            print("Server Closed")
 
     def handle_client(self,conn):
         # Send screen resolution
@@ -111,6 +132,12 @@ class Server:
         }
         return map.get(key, key)
 
-def start_server(): Server()
+server_instance = None
 
-if __name__=="__main__": Server()
+def start_server(status_label=None): 
+    global server_instance
+    server_instance = Server(status_label=status_label)
+    threading.Thread(target=server_instance.start_server(), daemon=True).start()
+
+if __name__=="__main__": 
+    start_server()
