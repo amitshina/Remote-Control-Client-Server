@@ -4,15 +4,34 @@ from PIL import Image, ImageTk
 import io
 import struct
 import time
+import threading
 
+import start_screen
 
 class Client:
-    def __init__(self, port=5000, host=''): # Defualt port: 5000
+    def __init__(self, port=5000, host='', tk_root=None): # Defualt port: 5000
+        self.tk_root = tk_root
+        
         if not host: host = input("Enter your IP Address: ")
         
+        if self.tk_root:
+            for child in self.tk_root.winfo_children(): child.destroy()
+            label = tk.Label(tk_root, text="Connecting...", font=("Arial", 12))
+            label.pack(pady=15)
+            btn_cancel = tk.Button(self.tk_root, text="Cancel", font=("Arial", 12), command=self.return_to_main)
+            btn_cancel.pack(pady=15)
+        
         print(f"Connecting to {host} port {port}")
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((host, port))
+        try:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.connect((host, port))
+        except Exception as e:
+            if self.tk_root:
+                for child in self.tk_root.winfo_children(): child.destroy()
+                label = tk.Label(tk_root, text=f"{e}", font=("Arial", 12))
+                label.pack(pady=15)
+                btn_return = tk.Button(self.tk_root, text="Return", font=("Arial", 12), command=self.return_to_main)
+                btn_return.pack(pady=15)
         
         # Recives and sets server screen resolution
         data = self.sock.recv(8)
@@ -20,6 +39,9 @@ class Client:
         self.server_height = int.from_bytes(data[4:], 'big')
         print(f"Server resolution: {self.server_width}x{self.server_height}")
 
+        if self.tk_root:
+            self.tk_root.destroy()
+        
         self.root = tk.Tk() 
         
         self.root.geometry(f"{self.server_width}x{self.server_height}")
@@ -27,6 +49,7 @@ class Client:
         
         self.label = tk.Label(self.root) 
         self.label.pack()
+
 
         # Commend Actions
         self.label.bind("<Motion>", self.mouse_move)
@@ -43,7 +66,20 @@ class Client:
         
         # Update Screen
         self.update_frame()
+        self.root.protocol("WM_DELETE_WINDOW", self.exit_client)
         self.root.mainloop()
+
+    def return_to_main(self):
+        try: self.root.destroy()
+        except: pass
+        start_screen.main()
+
+    def exit_client(self):
+        try: self.root.destroy()
+        except: pass
+        self.sock.close()
+        print("Exited")
+        start_screen.main()
 
     def update_frame(self):
         # Recives image size
@@ -127,6 +163,6 @@ class Client:
         except:
             pass
 
-def start_client(ip=""): Client(host=ip)
+def start_client(ip="", tk_root=None): Client(host=ip, tk_root=tk_root)
 
 if __name__=="__main__": Client()

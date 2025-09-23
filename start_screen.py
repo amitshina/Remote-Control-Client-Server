@@ -5,10 +5,9 @@ import threading
 import socket
 
 def get_local_ip():
-    """Find local IP address (LAN)."""
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))  # connect to Google DNS
+        s.connect(("8.8.8.8", 80)) 
         ip = s.getsockname()[0]
         s.close()
         return ip
@@ -39,6 +38,7 @@ def start_server():
         except Exception as e:
             print(f"Error stopping server {e}")
         server_root.destroy()
+        main()
     
     btn_stop = tk.Button(server_root, text="Stop Server", font=("Arial", 12), command=stop_server_button)
     btn_stop.pack(pady=5)
@@ -67,8 +67,7 @@ def open_client_window():
 
     def connect_client():
         ip = ip_entry.get().strip()
-        client_root.destroy()
-        client.start_client(ip)
+        client.start_client(ip=ip, tk_root=client_root)
 
     btn_connect = tk.Button(client_root, text="Connect", font=("Arial", 12), command=connect_client)
     btn_connect.pack(pady=15)
