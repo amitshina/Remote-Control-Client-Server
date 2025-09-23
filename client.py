@@ -41,7 +41,7 @@ class Client:
 
         if self.tk_root:
             self.tk_root.destroy()
-        
+
         self.root = tk.Tk() 
         
         self.root.geometry(f"{self.server_width}x{self.server_height}")
@@ -82,28 +82,35 @@ class Client:
         start_screen.main()
 
     def update_frame(self):
-        # Recives image size
-        size_data = self.sock.recv(8)
-        if not size_data:
-            self.root.destroy()
-            return
-        size = int.from_bytes(size_data, 'big')
-
-        # Receive image bytes
-        data = b''
-        while len(data) < size:
-            packet = self.sock.recv(size - len(data))
-            if not packet:
+        try:
+            # Recives image size
+            size_data = self.sock.recv(8)
+            if not size_data:
+                self.root.destroy()
                 return
-            data += packet
+            size = int.from_bytes(size_data, 'big')
 
-        img = Image.open(io.BytesIO(data))
-        img_tk = ImageTk.PhotoImage(img)
+            # Receive image bytes
+            data = b''
+            while len(data) < size:
+                packet = self.sock.recv(size - len(data))
+                if not packet:
+                    return
+                data += packet
 
-        self.label.config(image=img_tk)
-        self.label.image = img_tk
+            img = Image.open(io.BytesIO(data))
+            img_tk = ImageTk.PhotoImage(img)
 
-        self.root.after(30, self.update_frame)  # ~30 FPS
+            self.label.config(image=img_tk)
+            self.label.image = img_tk
+
+            self.root.after(30, self.update_frame)  # ~30 FPS
+        except:
+            self.root.destroy()
+            try: 
+                self.sock.close()
+            except: pass
+            start_screen.server_closed()
 
     def mouse_move(self, event):
         now = time.time()

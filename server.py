@@ -25,11 +25,11 @@ class Server:
         
         while self.is_running:
             try:
-                conn, addr = self.s.accept()
+                self.conn, addr = self.s.accept()
                 print(f"[SERVER] Connected by {addr}")
                 if self.status_label:
                     self.status_label.after(0, lambda: self.status_label.config(text=f"Connected to {addr[0]}"))
-                threading.Thread(target=self.handle_client, args=(conn,), daemon=True).start()
+                threading.Thread(target=self.handle_client, args=(self.conn,), daemon=True).start()
             except Exception as e:
                 if self.is_running: print(f"Excepsion running server: {e}")
                 break
@@ -38,6 +38,7 @@ class Server:
         self.is_running = False
         if self.s:
             self.s.close()
+            self.conn.close()
             self.s = None
             print("Server Closed")
 

@@ -48,7 +48,21 @@ def start_server():
     
     server_root.mainloop()
 
-
+def server_closed():
+    closed_root = tk.Tk()
+    closed_root.title("Connect as Client")
+    closed_root.geometry("300x150")
+    closed_root.resizable(False, False)
+    
+    label = tk.Label(closed_root, text="Server Closed", font=("Arial", 12))
+    label.pack(pady=15)
+    
+    def return_main():
+        closed_root.destroy()
+        main()
+    
+    btn_return = tk.Button(closed_root, text="Connect", font=("Arial", 12), command=return_main)
+    btn_return.pack(pady=15)
 
 def open_client_window():
     root.destroy()
