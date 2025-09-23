@@ -119,7 +119,10 @@ class Server:
         except Exception as e:
             print(f"Exeption: {e}, Connection Closed, Wating for a new connection")
         finally:
-            # Close the connection in an error acuurs
+            # Close the connection in an error acuurs or the client disconnects
+            if self.status_label:
+                self.status_label.after(0, lambda: self.status_label.config(text="Client Disconnected\nWating for a New Connection"))
+            
             conn.close()
 
     def convert_key(self, key: str):
