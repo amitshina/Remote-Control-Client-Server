@@ -16,19 +16,20 @@ class Client:
         
         if self.tk_root:
             for child in self.tk_root.winfo_children(): child.destroy()
-            label = tk.Label(tk_root, text="Connecting...", font=("Arial", 12))
+            label = tk.Label(self.tk_root, text="Connecting...", font=("Arial", 12))
             label.pack(pady=15)
-            btn_cancel = tk.Button(self.tk_root, text="Cancel", font=("Arial", 12), command=self.return_to_main)
-            btn_cancel.pack(pady=15)
+            
+            self.tk_root.update_idletasks()
+            self.tk_root.update()
         
         print(f"Connecting to {host} port {port}")
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock.connect((host, port))
-        except Exception as e:
+        except:
             if self.tk_root:
                 for child in self.tk_root.winfo_children(): child.destroy()
-                label = tk.Label(tk_root, text=f"{e}", font=("Arial", 12))
+                label = tk.Label(self.tk_root, text="Could'nt Connect to the Server", font=("Arial", 12))
                 label.pack(pady=15)
                 btn_return = tk.Button(self.tk_root, text="Return", font=("Arial", 12), command=self.return_to_main)
                 btn_return.pack(pady=15)
@@ -70,6 +71,9 @@ class Client:
         self.root.mainloop()
 
     def return_to_main(self):
+        if self.tk_root:
+            try: self.tk_root.destroy()
+            except: pass
         try: self.root.destroy()
         except: pass
         start_screen.main()
