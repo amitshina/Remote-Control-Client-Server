@@ -43,7 +43,7 @@ def handle_client(conn):
                     key = convert_key(key)
                     try:
                         pyautogui.keyDown(key)
-                        print(f"Down {key}.")
+                        print(f"Down {key}.")  
                     except:
                         print(f"[WARN] Unsupported key: {key}")
                 elif cmd_type == b'UKeybr':

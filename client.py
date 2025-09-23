@@ -1,6 +1,7 @@
 #requirements:
 #pip install pillow
 
+import string
 import socket
 import tkinter as tk
 from PIL import Image, ImageTk
@@ -103,13 +104,10 @@ class RemoteViewer:
             pass
     
     def get_key(self, event):
-        key = event.keysym
-        if event.char and event.char.strip() != "":
-            key =  event.char
-        if not key or key == "":
+        key = event.char
+        if not key or not "".join(filter(lambda x: x in string.printable, key)):
             key = event.keysym
-        if not key:
-            return None
+        # print(f"char: '{event.char}', and keysym: '{event.keysym}', chosen: '{key}'")
         return key
     
     def keyboard_down(self,event):
