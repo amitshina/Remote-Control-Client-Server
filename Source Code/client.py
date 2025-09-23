@@ -34,14 +34,15 @@ class Client:
                 btn_return = tk.Button(self.tk_root, text="Return", font=("Arial", 12), command=self.return_to_main)
                 btn_return.pack(pady=15)
         
+        if self.tk_root:
+            self.tk_root.destroy()
+        
         # Recives and sets server screen resolution
         data = self.sock.recv(8)
         self.server_width = int.from_bytes(data[:4], 'big')
         self.server_height = int.from_bytes(data[4:], 'big')
         print(f"Server resolution: {self.server_width}x{self.server_height}")
 
-        if self.tk_root:
-            self.tk_root.destroy()
 
         self.root = tk.Tk() 
         
